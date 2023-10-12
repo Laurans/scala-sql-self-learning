@@ -10,7 +10,6 @@ lazy val root = project
 
     libraryDependencies ++= Seq(
       "org.scalameta" %% "munit" % "0.7.29" % Test,
-      "com.github.japgolly.clearconfig" %% "core" % "3.1.0",
       "org.postgresql" % "postgresql" % "42.2.5", //org.postgresql.ds.PGSimpleDataSource dependency
       "org.scalikejdbc" %% "scalikejdbc"       % "4.0.0",
       "org.scalikejdbc" %% "scalikejdbc-config"  % "4.0.0",
