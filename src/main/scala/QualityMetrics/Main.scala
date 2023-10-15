@@ -1,8 +1,8 @@
 import scala.concurrent.{Future, Await}
 import scala.concurrent.duration.Duration
-import scalikejdbc._
-import scalikejdbc.config._
-import qualitymetrics._
+import scalikejdbc.*
+import scalikejdbc.config.*
+import qualitymetrics.*
 
 object SQLinspect:
     def get_table_statistics(schemaName: String, tableName: String) = 

@@ -1,5 +1,5 @@
 package qualitymetrics
-import scalikejdbc._
+import scalikejdbc.*
 import scala.io.Source
 import scalikejdbc.interpolation.SQLSyntax
 
