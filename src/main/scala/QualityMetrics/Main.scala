@@ -2,25 +2,31 @@ import scala.concurrent.{Future, Await}
 import scala.concurrent.duration.Duration
 import scalikejdbc._
 import scalikejdbc.config._
-import qualitymetrics.{checkIfTableExists, getOneExample, isNumeric, ColumnStats}
+import qualitymetrics._
 
 object SQLinspect:
-    def get_table_statistics(table_name: String, schema_name: String) = 
-        val isTableExists = checkIfTableExists(table_name = table_name, schema_name = schema_name)
+    def get_table_statistics(schemaName: String, tableName: String) = 
+        val isTableExists = checkIfTableExists(tableName = tableName, schemaName = schemaName)
         
         if isTableExists == true then
-            val columns = getOneExample(s"$schema_name.$table_name")
-            println(s"Columns for $schema_name.$table_name=$columns")
-            //columns.map(col => (col._1, col._2, isNumeric(col._2, col._3))).foreach(t => println(s"$t"))
+            val tableIdentifier = escapeTable(schemaName, tableName)
+            val columns = getOneExample(tableIdentifier)
+
             columns.map{col =>  
                 val stat = ColumnStats(col._1, col._2, col._3)
                 stat.isNumber = isNumeric(stat.typed, stat.example)
-                stat}.foreach(println)
+                stat}.map{
+                    stat =>
+                        if stat.isNumber then
+                            val dataMap = getStatsForNumericField(tableIdentifier, stat.columnName)
+                            val updatedStat = Nil
+                        end if
+                        stat
+                }
         end if
 
-        
 
-@main def describe(table_name: String, schema_name: String, params: String*): Unit = {
+@main def describe(schemaName: String, tableName: String, params: String*): Unit = {
     DBs.setupAll()
-    SQLinspect.get_table_statistics(table_name, schema_name)
+    SQLinspect.get_table_statistics(schemaName, tableName)
 }
