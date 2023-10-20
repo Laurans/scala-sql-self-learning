@@ -12,6 +12,7 @@ object SQLinspect:
     if isTableExists then
       val tableIdentifier = escapeTable(schemaName, tableName)
       val columns         = getOneExample(tableIdentifier)
+      val nbRows          = getNbRows(tableIdentifier)
 
       columns
         .map { col =>
@@ -25,7 +26,7 @@ object SQLinspect:
         }
         .map { colStats =>
 
-          var dataMap: Map[String, Any] = Map.empty
+          var dataMap: Map[String, String | Int | Long | Float] = Map.empty
           if colStats.isNumber then
             dataMap = getStatsForNumericField(tableIdentifier, colStats.columnName)
           else if colStats.isString then
@@ -33,9 +34,11 @@ object SQLinspect:
           end if
 
           colStats.updateStats(dataMap)
-          colStats
+          colStats.getDataQualityRatio(nbRows)
+          colStats.transformToCSVRow()
         }
         .map(println)
+      // TODO: Convert into List to output as CSV
     end if
 
 @main def describe(
